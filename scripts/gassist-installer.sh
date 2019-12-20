@@ -24,7 +24,7 @@ then
     echo "This script must run as $RUN_AS, trying to change user..."
     exec sudo -u $RUN_AS $0
 fi
-clear
+
 echo ""
 read -r -p "Enter the your full credential file name including the path and .json extension: " credname
 echo ""

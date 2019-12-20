@@ -34,7 +34,12 @@ read -r -p "Enter the modelid that was generated in the actions console: " model
 echo ""
 echo "Your Model-Id used for the project is: $modelid" >> /home/${USER}/modelid.txt
 
-sudo apt-get update -y
+{
+   sudo apt-get update -y
+} || {
+   echo "Updates for this repository will not be applied.."
+}
+
 sed 's/#.*//' ${GIT_DIR}/Requirements/GassistPi-system-requirements.txt | xargs sudo apt-get install -y
 sudo pip install pyaudio
 
@@ -114,12 +119,12 @@ fi
 
 #Check CPU architecture
 if [[ $(uname -m|grep "armv7") ]] || [[ $(uname -m|grep "x86_64") ]]; then
-	devmodel="armv7"
+    devmodel="armv7"
   echo ""
   echo "===========Your board supports Ok-Google Hotword. You can also trigger the assistant using custom-wakeword=========="
   echo ""
 else
-	devmodel="armv6"
+    devmodel="armv6"
   echo ""
   echo "==========Your board does not support Ok-Google Hotword. You need to trigger the assistant using pushbutton/custom-wakeword=========="
   echo ""
@@ -127,12 +132,12 @@ fi
 
 #Check Board Model
 if [[ $(cat /proc/cpuinfo|grep "BCM") ]]; then
-	board="Raspberry"
+    board="Raspberry"
   echo ""
   echo "===========GPIO pins can be used with the assistant=========="
   echo ""
 else
-	board="Others"
+    board="Others"
   echo ""
   echo "===========GPIO pins cannot be used by default with the assistant. You need to figure it out by yourselves=========="
   echo ""
@@ -200,11 +205,11 @@ source env/bin/activate
 pip install -r ${GIT_DIR}/Requirements/GassistPi-pip-requirements.txt
 
 if [[ $board = "Raspberry" ]] && [[ $osversion != "OSMC Stretch" ]];then
-	pip install RPi.GPIO==0.6.3
+    pip install RPi.GPIO==0.6.3
 fi
 
 if [[ $devmodel = "armv7" ]];then
-	pip install google-assistant-library==1.0.1
+    pip install google-assistant-library==1.0.1
 else
   pip install --upgrade --no-binary :all: grpcio
 fi
@@ -219,7 +224,7 @@ google-oauthlib-tool --scope https://www.googleapis.com/auth/assistant-sdk-proto
 echo "Testing the installed google assistant. Make a note of the generated Device-Id"
 
 if [[ $devmodel = "armv7" ]];then
-	googlesamples-assistant-hotword --project_id $projid --device_model_id $modelid
+    googlesamples-assistant-hotword --project_id $projid --device_model_id $modelid
 else
-	googlesamples-assistant-pushtotalk --project-id $projid --device-model-id $modelid
+    googlesamples-assistant-pushtotalk --project-id $projid --device-model-id $modelid
 fi
